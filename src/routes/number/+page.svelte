@@ -14,6 +14,9 @@
 	import { getScreenSpaceSizeAtWorldZ } from '../../lib/3d/lmth/getScreenSpaceSizeAtWorldZ';
 	import Meta from '../../lib/meta/Meta.svelte';
 	import { goto } from '$app/navigation';
+	import { ic_arrow_back } from 'maic/two_tone';
+	import { Button, ButtonVariants } from '@sxxov/sv/button';
+	import { Svg } from '@sxxov/sv/svg';
 
 	const camera = useEphemeralCamera(new THREE.PerspectiveCamera(75));
 	const rendererSize = useAmbientRendererSize()!;
@@ -118,20 +121,27 @@
 	});
 </script>
 
-<svelte:window
-	on:visibilitychange={async () => {
-		if (document.visibilityState === 'visible')
-			try {
-				await navigator.wakeLock.request('screen');
-			} catch {}
-	}}
-/>
 <Meta
 	title="{text} — NUM"
 	description="The game of teamworking guessing"
 	src=""
 	keywords={['num', 'number', 'game', 'random', 'rng']}
 />
+<div class="number">
+	<div class="back">
+		<Button
+			{...ButtonVariants.Transparent}
+			{...ButtonVariants.Shadow.None}
+			on:click={() => {
+				void document.exitFullscreen();
+				void goto('/');
+			}}
+		>
+			<Svg svg={ic_arrow_back} />
+			Main Menu
+		</Button>
+	</div>
+</div>
 <T is={camera} />
 <T.PointLight
 	position={[0, 1, 0]}
@@ -157,69 +167,12 @@
 </T.Mesh>
 
 <style lang="postcss">
-	.home {
-		& > .countdown {
+	.number {
+		& > .back {
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-
-			pointer-events: none;
-
-			& > .item {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-
-				display: flex;
-				justify-content: center;
-				align-items: center;
-
-				font-size: 8rem;
-				margin: 0;
-
-				animation: fly-in 1.1s var(----ease-fast-slow) both;
-
-				@keyframes fly-in {
-					0% {
-						transform: scale(1);
-						opacity: 0;
-					}
-
-					10% {
-						opacity: 1;
-					}
-
-					90% {
-						opacity: 1;
-					}
-
-					100% {
-						transform: scale(0.8);
-						opacity: 0;
-					}
-				}
-			}
-		}
-
-		& > .prompt {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
+			top: 14px;
+			left: 14px;
 			z-index: 1;
-
-			padding: 56px;
-			box-sizing: border-box;
 		}
 	}
 </style>

@@ -41,6 +41,11 @@
 	};
 	const start = async () => {
 		starting = true;
+
+		try {
+			await document.documentElement.requestFullscreen();
+		} catch {}
+
 		numberClear();
 		countdownComposition.stop();
 		await countdownComposition.play(1, 1);

@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import { Button, ButtonVariants } from '@sxxov/sv/button';
 	import { Svg } from '@sxxov/sv/svg';
 	import { Composition, Tween } from '@sxxov/ut/animation';
 	import { bezierQuintInOut } from '@sxxov/ut/bezier/beziers';
+	import { lerp } from '@sxxov/ut/math';
 	import { ic_play_arrow } from 'maic/two_tone';
 	import Meta from '../lib/meta/Meta.svelte';
-	import { onMount } from 'svelte';
-	import { preloadCode } from '$app/navigation';
 
 	void preloadCode('/number');
 
@@ -49,7 +48,18 @@
 		numberClear();
 		countdownComposition.stop();
 		await countdownComposition.play(1, 1);
-		numberSet(Math.floor(Math.random() * 10) + 1);
+		const q = new URLSearchParams(location.search);
+		const startString = q.get('start') ?? '';
+		const startNumber =
+			startString === '' || Number.isNaN(Number(startString))
+				? 1
+				: Number(startString);
+		const endString = q.get('end') ?? '';
+		const endNumber =
+			endString === '' || Number.isNaN(Number(endString))
+				? 10
+				: Number(endString);
+		numberSet(Math.ceil(lerp(Math.random(), startNumber - 1, endNumber)));
 		await goto('/number');
 		starting = false;
 	};

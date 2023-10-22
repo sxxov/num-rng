@@ -26,9 +26,14 @@
 	const rendererSize = useAmbientRendererSize()!;
 	const z = -10;
 
+	const gotoMainMenu = async () => {
+		if (document.referrer.startsWith(location.origin)) history.back();
+		else await goto('/');
+	};
+
 	const number = localStorage.getItem('number');
 	if (!number) {
-		void goto('/');
+		void gotoMainMenu();
 	}
 	const text = String(number ?? '');
 	const textSize = 100;
@@ -154,7 +159,7 @@
 					await document.exitFullscreen();
 				} catch {}
 
-				void goto('/');
+				void gotoMainMenu();
 			}}
 		>
 			<Svg svg={ic_arrow_back} />

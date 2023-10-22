@@ -13,14 +13,14 @@
 	const exrLoader = useLoader(EXRLoader);
 	const suspend = useSuspense();
 
-	$: texture = suspend(exrLoader.load(exr));
+	$: texture = exr ? suspend(exrLoader.load(exr)) : undefined;
 
 	let initialEnvironment = scene.environment;
 	let initialToneMappingExposure = renderer.toneMappingExposure;
 	$: if ($texture) {
 		$texture.mapping = THREE.EquirectangularReflectionMapping;
 		scene.environment = $texture;
-	}
+	} else scene.environment = initialEnvironment;
 	$: if ($texture) $texture.rotation = rotation;
 	$: renderer.toneMappingExposure = exposure;
 

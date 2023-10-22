@@ -132,8 +132,11 @@
 		<Button
 			{...ButtonVariants.Transparent}
 			{...ButtonVariants.Shadow.None}
-			on:click={() => {
-				void document.exitFullscreen();
+			on:click={async () => {
+				try {
+					await document.exitFullscreen();
+				} catch {}
+
 				void goto('/');
 			}}
 		>

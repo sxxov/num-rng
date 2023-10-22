@@ -1,22 +1,26 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { Button, ButtonVariants } from '@sxxov/sv/button';
+	import { Svg } from '@sxxov/sv/svg';
 	import { Composition, Tween } from '@sxxov/ut/animation';
 	import { Bezier } from '@sxxov/ut/bezier';
 	import { bezierQuintInOut, bezierQuintOut } from '@sxxov/ut/bezier/beziers';
 	import { lerp, map } from '@sxxov/ut/math';
 	import type { Size } from '@sxxov/ut/viewport';
 	import { T, useFrame } from '@threlte/core';
+	import {} from '@threlte/extras';
+	import { ic_arrow_back } from 'maic/two_tone';
 	import { onDestroy, onMount } from 'svelte';
 	import * as THREE from 'three';
 	import { FontLoader, TextGeometry } from 'three-stdlib';
 	import bigelow_rules from '../../assets/common/font/BigelowRules_Regular.json';
 	import { useEphemeralCamera } from '../../lib/3d/camera/useEphemeralCamera';
+	import { useAmbientInteractivity } from '../../lib/3d/canvas/useAmbientInteractivity';
 	import { useAmbientRendererSize } from '../../lib/3d/canvas/useAmbientRendererSize';
 	import { getScreenSpaceSizeAtWorldZ } from '../../lib/3d/lmth/getScreenSpaceSizeAtWorldZ';
 	import Meta from '../../lib/meta/Meta.svelte';
-	import { goto } from '$app/navigation';
-	import { ic_arrow_back } from 'maic/two_tone';
-	import { Button, ButtonVariants } from '@sxxov/sv/button';
-	import { Svg } from '@sxxov/sv/svg';
+
+	useAmbientInteractivity();
 
 	const camera = useEphemeralCamera(new THREE.PerspectiveCamera(75));
 	const rendererSize = useAmbientRendererSize()!;
@@ -61,6 +65,19 @@
 			scheduleSizeUpdate = false;
 		}
 	});
+
+	let spinTapY = new Tween(0, 2 * Math.PI, 1000, bezierQuintOut);
+	const spinTap = () => {
+		spinTapY.pause();
+		const v = spinTapY.get() % (2 * Math.PI);
+		spinTapY = new Tween(
+			v,
+			v > Math.PI ? 4 * Math.PI : 2 * Math.PI,
+			1000,
+			bezierQuintOut,
+		);
+		void spinTapY.play(1, 1);
+	};
 
 	const spinX = new Tween(
 		0,
@@ -156,10 +173,11 @@
 	position.z={z + $introZ}
 	rotation={[
 		$spinX,
-		$spinY,
+		$spinY + $spinTapY,
 		map($wiggle0 + $wiggle1 + $wiggle2, -0.5, 0.5, -0.05, 0.05),
 	]}
 	scale={size.height * textScale + lerp($pulseIn + $pulseOut, 0, 0.002)}
+	on:pointerdown={spinTap}
 >
 	<T.MeshPhysicalMaterial
 		color={new THREE.Color(0xffffff)}
@@ -171,11 +189,22 @@
 
 <style lang="postcss">
 	.number {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+
+		z-index: 1;
+
+		pointer-events: none;
+
 		& > .back {
-			position: fixed;
+			position: absolute;
 			top: 14px;
 			left: 14px;
-			z-index: 1;
+
+			pointer-events: auto;
 		}
 	}
 </style>

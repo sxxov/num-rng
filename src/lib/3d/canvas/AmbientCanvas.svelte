@@ -115,7 +115,7 @@
 			left: 0;
 			width: 100%;
 			height: 100vh;
-			height: 100lvh;
+			/* height: 100lvh; */
 
 			opacity: 0;
 			transition: opacity 1s var(----ease-slow-slow);

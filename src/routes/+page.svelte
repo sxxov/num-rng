@@ -45,6 +45,10 @@
 			await document.documentElement.requestFullscreen();
 		} catch {}
 
+		try {
+			await navigator.wakeLock.request('screen');
+		} catch {}
+
 		numberClear();
 		countdownComposition.stop();
 		await countdownComposition.play(1, 1);
